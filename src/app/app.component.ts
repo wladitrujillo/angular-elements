@@ -45,10 +45,12 @@ export class AppComponent implements OnInit {
   dataSource: TodosDataSource;
 
   orders: Order[];
-  ordersTableColumns: { name: string;
-    dataKey: string;
+  ordersTableColumns: {
+    label: string;
+    key: string;
     position?: 'right' | 'left';
-    isSortable?: boolean;}[] = [];
+    isSortable?: boolean;
+  }[] = [];
 
   constructor(private http: HttpClient,
     private currencyPipe: CurrencyPipe,
@@ -69,11 +71,13 @@ export class AppComponent implements OnInit {
 
 
   sortData(sortParameters: Sort) {
-    const keyName = sortParameters.active;
+    const keyName: string = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-      //this.orders = this.orders.sort((a: Order, b: Order) => a[keyName].localeCompare(b[keyName]));
+     // this.orders = this.orders.sort((a: Order, b: Order) => a[keyName as keyof Order]?.localeCompare(b[keyName as keyof Order]));
+     console.log("sorting asc by:", keyName)
     } else if (sortParameters.direction === 'desc') {
-      //this.orders = this.orders.sort((a: Order, b: Order) => b[keyName].localeCompare(a[keyName]));
+     // this.orders = this.orders.sort((a: Order, b: Order) => b[keyName as keyof Order]?.localeCompare(a[keyName as keyof Order]));
+     console.log("sorting desc by:", keyName)
     } else {
       this.orders = this.getOrders();
     }
@@ -86,26 +90,26 @@ export class AppComponent implements OnInit {
   initializeColumns(): void {
     this.ordersTableColumns = [
       {
-        name: 'book name',
-        dataKey: 'description',
+        label: 'book name',
+        key: 'description',
         position: 'left',
         isSortable: true
       },
       {
-        name: 'ordered amount',
-        dataKey: 'amount',
+        label: 'ordered amount',
+        key: 'amount',
         position: 'right',
         isSortable: false
       },
       {
-        name: 'book price',
-        dataKey: 'price',
+        label: 'book price',
+        key: 'price',
         position: 'right',
         isSortable: true
       },
       {
-        name: 'book discount',
-        dataKey: 'discount',
+        label: 'book discount',
+        key: 'discount',
         position: 'right',
         isSortable: false
       },

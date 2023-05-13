@@ -19,8 +19,8 @@ export class CustomTableComponent implements OnInit, AfterViewInit {
   @Input() isSortable = false;
   @Input() isFilterable = false;
   @Input() tableColumns: {
-    name: string;
-    dataKey: string;
+    label: string;
+    key: string;
     position?: 'right' | 'left';
     isSortable?: boolean;
   }[] = [];
@@ -40,7 +40,7 @@ export class CustomTableComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    const columnNames = this.tableColumns.map((tableColumn) => tableColumn.name);
+    const columnNames = this.tableColumns.map((tableColumn) => tableColumn.label);
     if (this.rowActionIcon) {
       this.displayedColumns = [this.rowActionIcon, ...columnNames];
     } else {
@@ -67,7 +67,7 @@ export class CustomTableComponent implements OnInit, AfterViewInit {
 
   sortTable(sortParameters: Sort) {
     // defining name of data property, to sort by, instead of column name
-    //sortParameters.active = this.tableColumns.find(column => column.name === sortParameters.active).dataKey;
+    sortParameters.active = this.tableColumns.find(column => column.label === sortParameters.active)?.key || '';
     this.sort.emit(sortParameters);
   }
 
