@@ -56,10 +56,14 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.todosDataSource.loadData(0, 5);
+    this.loadPage({ page: 0, size: 5 })
 
 
   };
+
+  loadPage(page: { page: number, size: number }) {
+    this.todosDataSource.loadData(page.page, page.size);
+  }
 
 
   sortData(sortParameters: Sort) {

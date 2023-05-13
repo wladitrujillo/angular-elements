@@ -1,4 +1,4 @@
-
-<app-generic-table [dataSource]="todosDataSource" [columnsSchema]="todosSchema" [isFilterable]="false" [isPageable]="true"
-    (sort)="sortData($event)" (rowSelection)="rowSelection($event)" (rowDeleting)="rowDeleting($event)">
+<app-generic-table [dataSource]="todosDataSource" [columnsSchema]="todosSchema" [isFilterable]="false"
+    [isPageable]="true" (sort)="sortData($event)" (rowSelection)="rowSelection($event)"
+    (rowDeleting)="rowDeleting($event)" (pagination)="loadPage($event)">
 </app-generic-table>

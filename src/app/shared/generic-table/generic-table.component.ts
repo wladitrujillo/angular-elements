@@ -27,6 +27,7 @@ export class GenericTableComponent implements OnInit, AfterViewInit {
   @Output() sort: EventEmitter<Sort> = new EventEmitter();
   @Output() rowSelection: EventEmitter<any> = new EventEmitter<any>();
   @Output() rowDeleting: EventEmitter<any> = new EventEmitter<any>();
+  @Output() pagination: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild(MatPaginator, { static: false }) matPaginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) matSort!: MatSort;
@@ -45,7 +46,12 @@ export class GenericTableComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     merge(this.matPaginator?.page)
       .pipe(
-        tap(() => this.loadPage())
+        tap(() => this.pagination.emit(
+          {
+            page: this.matPaginator.pageIndex,
+            size: this.matPaginator.pageSize
+          })
+        )
       )
       .subscribe();
 
@@ -65,7 +71,7 @@ export class GenericTableComponent implements OnInit, AfterViewInit {
 
   sortTable(sortParameters: Sort) {
     // defining name of data property, to sort by, instead of column name
-    sortParameters.active = this.columnsSchema.find(column => column.label === sortParameters.active)?.key || '';
+    sortParameters.active = this.columnsSchema.find(column => column.key === sortParameters.active)?.key || '';
     this.sort.emit(sortParameters);
   }
 
@@ -73,7 +79,7 @@ export class GenericTableComponent implements OnInit, AfterViewInit {
     this.rowSelection.emit(row);
   }
 
-  emitRowDeleting(row:any){
+  emitRowDeleting(row: any) {
     this.rowDeleting.emit(row);
   }
 }
