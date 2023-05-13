@@ -19,7 +19,8 @@ export class TodosDataSource implements DataSource<Todo> {
 
     constructor(private http: HttpClient) { }
 
-    load(
+
+    loadData(
         page: number,
         limit: number) {
 
@@ -37,6 +38,7 @@ export class TodosDataSource implements DataSource<Todo> {
             });
     }
 
+  
     removeData(index: number) {
         const data = this.subject.value;
         data.splice(index, 1);

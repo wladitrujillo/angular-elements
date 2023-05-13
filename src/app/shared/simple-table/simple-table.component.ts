@@ -32,7 +32,7 @@ export class SimpleTableComponent {
   }
 
   loadPage() {
-    this.dataSource.load(
+    this.dataSource.loadData(
       this.matPaginator?.pageIndex,
       this.matPaginator?.pageSize);
   }

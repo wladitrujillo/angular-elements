@@ -1,9 +1,4 @@
-<app-simple-table [isPageable]="true" [dataSource]="dataSource" [columnsSchema]="todosSchema">
 
-</app-simple-table>
-
-
-<app-custom-table [tableData]="orders" [tableColumns]="ordersTableColumns" [isFilterable]="true" [isPageable]="true"
-    [paginationSizes]="[2,4,6]" [defaultPageSize]="4" (sort)="sortData($event)" [rowActionIcon]="'remove_shopping_cart'"
-    (rowAction)="removeOrder($event)">
-</app-custom-table>
+<app-generic-table [dataSource]="todosDataSource" [columnsSchema]="todosSchema" [isFilterable]="false" [isPageable]="true"
+    (sort)="sortData($event)" (rowAction)="rowAction($event)">
+</app-generic-table>

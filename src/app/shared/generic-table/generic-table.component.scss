@@ -44,3 +44,15 @@ p {
     padding-right: 5px;
   }
   
+  
+  th, td {
+    padding: 10px !important;
+  }
+  
+  mat-form-field {
+    width: 40%;
+  }
+  
+  .text-right {
+    text-align: right !important;
+  }

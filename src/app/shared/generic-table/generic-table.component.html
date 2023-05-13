@@ -1,65 +1,95 @@
-<table mat-table [dataSource]="dataSource">
-    <ng-container [matColumnDef]="col.key" *ngFor="let col of columnsSchema">
-        <th mat-header-cell *matHeaderCellDef>
-            {{ col.label }}
-        </th>
-        <td mat-cell *matCellDef="let element">
+<ng-container>
 
-            <div [ngSwitch]="col.type" *ngIf="!element.isEdit">
-                <div class="btn-edit" *ngSwitchCase="'isEdit'">
-                    <button mat-raised-button class="btn btn-success btn-link push-right"
-                        (click)="element.isEdit = !element.isEdit">
-                        <mat-icon>edit</mat-icon>
-                    </button>
-                    <button mat-raised-button class="btn btn-danger btn-link">
-                        <mat-icon>close</mat-icon>
-                    </button>
-                </div>
-                <span *ngSwitchCase="'date'">
-                    {{ element[col.key] | date: 'mediumDate' }}
-                </span>
-                <span *ngSwitchCase="'boolean'">
-                    <mat-checkbox [disabled]="true" [checked]="element[col.key]">
-                    </mat-checkbox>
-                </span>
-                <span *ngSwitchDefault>
-                    {{ element[col.key] }}
-                </span>
-            </div>
-
-            <div [ngSwitch]="col.type" *ngIf="element.isEdit">
-                <div class="btn-edit" *ngSwitchCase="'isEdit'">
-                    <button mat-raised-button class="btn btn-success btn-link push-right">
-                        <mat-icon>edit</mat-icon>
-                    </button>
-                    <button mat-raised-button class="btn btn-danger btn-link"
-                        (click)="element.isEdit = !element.isEdit">
-                        <mat-icon>close</mat-icon>
-                    </button>
-                </div>
-                <mat-checkbox class="form-input" *ngSwitchCase="'boolean'" [checked]="element[col.key]"
-                    [(ngModel)]="element[col.key]">
-                </mat-checkbox>
-                <mat-form-field class="form-input" *ngSwitchCase="'date'" appearance="fill">
-                    <mat-label>Choose a date</mat-label>
-                    <input matInput [matDatepicker]="picker" [(ngModel)]="element[col.key]" />
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-                <mat-form-field class="form-input" *ngSwitchCase="'number'">
-                    <input type="number" matInput (ngModelChange)="element[col.key] = $event"
-                        [ngModel]="element[col.key]" />
-                </mat-form-field>
-                <mat-form-field class="form-input" *ngSwitchDefault>
-                    <input [type]="col.type" matInput [(ngModel)]="element[col.key]" />
-                </mat-form-field>
-            </div>
-
-        </td>
+    <!-- Filter -->
+    <ng-container *ngIf="isFilterable">
+        <mat-form-field>
+            <mat-label>Filter</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="filter">
+        </mat-form-field>
     </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-</table>
-<!-- Pagination -->
-<mat-paginator *ngIf="isPageable" [length]="dataSource.totalRows$ | async" [pageSizeOptions]="paginationSizes" [pageSize]="defaultPageSize" showFirstLastButtons>
-</mat-paginator>
+
+    <!-- Table -->
+    <table mat-table [dataSource]="dataSource" matSort (matSortChange)="sortTable($event)">
+
+        <ng-container [matColumnDef]="tableColumn.key" *ngFor="let tableColumn of columnsSchema">
+            <!--Header-->
+            <!-- if sortable column header -->
+            <ng-container *ngIf="tableColumn.isSortable; else notSortable">
+                <th mat-header-cell *matHeaderCellDef [mat-sort-header]="tableColumn.key"
+                    [arrowPosition]="tableColumn.type === 'number' ? 'before' : 'after'">
+                    {{tableColumn.label}}
+                </th>
+            </ng-container>
+            <!-- else not sortable -->
+            <ng-template #notSortable>
+                <th mat-header-cell *matHeaderCellDef [class.text-right]="tableColumn.type == 'number'">
+                    {{tableColumn.label}}
+                </th>
+            </ng-template>
+
+            <!-- Data -->
+            <td mat-cell *matCellDef="let element" [class.text-right]="tableColumn.type == 'number'">
+
+                <!--No Editing Mode-->
+                <span [ngSwitch]="tableColumn.type" *ngIf="!element.isEdit">
+                    <span *ngSwitchCase="'isEdit'" class="btn-edit">
+                        <button mat-raised-button class="btn btn-success btn-link push-right"
+                            (click)="element.isEdit = !element.isEdit">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-raised-button class="btn btn-danger btn-link">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </span>
+                    <span *ngSwitchCase="'date'">
+                        {{ element[tableColumn.key] | date: 'mediumDate' }}
+                    </span>
+                    <span *ngSwitchCase="'boolean'">
+                        <mat-checkbox [disabled]="true" [checked]="element[tableColumn.key]">
+                        </mat-checkbox>
+                    </span>
+                    <span *ngSwitchDefault>
+                        {{element[tableColumn.key]}}
+                    </span>
+                </span>
+
+                <!--Editing mode-->
+                <span [ngSwitch]="tableColumn.type" *ngIf="element.isEdit">
+                    <div class="btn-edit" *ngSwitchCase="'isEdit'">
+                        <button mat-raised-button class="btn btn-success btn-link push-right">
+                            <mat-icon>done</mat-icon>
+                        </button>
+                        <button mat-raised-button class="btn btn-danger btn-link"
+                            (click)="element.isEdit = !element.isEdit">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+                    <mat-checkbox class="form-input" *ngSwitchCase="'boolean'" [checked]="element[tableColumn.key]"
+                        [(ngModel)]="element[tableColumn.key]">
+                    </mat-checkbox>
+                    <mat-form-field class="form-input" *ngSwitchCase="'date'" appearance="fill">
+                        <mat-label>Choose a date</mat-label>
+                        <input matInput [matDatepicker]="picker" [(ngModel)]="element[tableColumn.key]" />
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field class="form-input" *ngSwitchCase="'number'">
+                        <input type="number" matInput (ngModelChange)="element[tableColumn.key] = $event"
+                            [ngModel]="element[tableColumn.key]" />
+                    </mat-form-field>
+                    <mat-form-field class="form-input" *ngSwitchDefault>
+                        <input [type]="tableColumn.type" matInput [(ngModel)]="element[tableColumn.key]" />
+                    </mat-form-field>
+                </span>
+
+            </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <!-- Pagination -->
+    <mat-paginator *ngIf="isPageable" [length]="dataSource.totalRows$ | async" [pageSizeOptions]="paginationSizes"
+        [pageSize]="defaultPageSize" showFirstLastButtons>
+    </mat-paginator>
+</ng-container>

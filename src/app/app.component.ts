@@ -4,6 +4,7 @@ import { TodosDataSource } from './todos-data-source';
 import { CurrencyPipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { Sort } from '@angular/material/sort';
 import { Order } from './order';
+import { Todo } from './todo';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,8 @@ export class AppComponent implements OnInit {
     {
       key: 'id',
       type: 'number',
-      label: "ID"
+      label: "ID",
+      isSortable: true
     },
     {
       key: 'todo',
@@ -42,29 +44,19 @@ export class AppComponent implements OnInit {
     },
   ]
 
-  dataSource: TodosDataSource;
-
-  orders: Order[];
-  ordersTableColumns: {
-    label: string;
-    key: string;
-    position?: 'right' | 'left';
-    isSortable?: boolean;
-  }[] = [];
+  todosDataSource: TodosDataSource;
 
   constructor(private http: HttpClient,
     private currencyPipe: CurrencyPipe,
     private decimalPipe: DecimalPipe,
     private percentPipe: PercentPipe) {
-    this.dataSource = new TodosDataSource(http);
-    this.orders = this.getOrders();
+    this.todosDataSource = new TodosDataSource(http);
   }
 
 
   ngOnInit(): void {
 
-    this.dataSource.load(0, 5);
-    this.initializeColumns();
+    this.todosDataSource.loadData(0, 5);
 
 
   };
@@ -73,88 +65,17 @@ export class AppComponent implements OnInit {
   sortData(sortParameters: Sort) {
     const keyName: string = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-     // this.orders = this.orders.sort((a: Order, b: Order) => a[keyName as keyof Order]?.localeCompare(b[keyName as keyof Order]));
-     console.log("sorting asc by:", keyName)
+      console.log("sorting asc by:", keyName)
     } else if (sortParameters.direction === 'desc') {
-     // this.orders = this.orders.sort((a: Order, b: Order) => b[keyName as keyof Order]?.localeCompare(a[keyName as keyof Order]));
-     console.log("sorting desc by:", keyName)
+      console.log("sorting desc by:", keyName)
     } else {
-      this.orders = this.getOrders();
+      console.log("unsorted")
     }
   }
 
-  removeOrder(order: Order) {
-    this.orders = this.orders.filter(item => item.id !== order.id);
+  rowAction(row: Todo) {
+    //this.orders = this.orders.filter(item => item.id !== order.id);
+    console.log("Row action:", row)
   }
-
-  initializeColumns(): void {
-    this.ordersTableColumns = [
-      {
-        label: 'book name',
-        key: 'description',
-        position: 'left',
-        isSortable: true
-      },
-      {
-        label: 'ordered amount',
-        key: 'amount',
-        position: 'right',
-        isSortable: false
-      },
-      {
-        label: 'book price',
-        key: 'price',
-        position: 'right',
-        isSortable: true
-      },
-      {
-        label: 'book discount',
-        key: 'discount',
-        position: 'right',
-        isSortable: false
-      },
-    ];
-  }
-
-  getOrders(): any[] {
-    return [
-      {
-        id: 1,
-        description: 'first book',
-        amount: this.decimalPipe.transform(2, '.1'),
-        price: this.currencyPipe.transform(15),
-        discount: this.percentPipe.transform(0, '.2')
-      },
-      {
-        id: 2,
-        description: 'second book',
-        amount: this.decimalPipe.transform(1, '.1'),
-        price: this.currencyPipe.transform(42.5),
-        discount: this.percentPipe.transform(0.1, '.2')
-      },
-      {
-        id: 3,
-        description: 'third book',
-        amount: this.decimalPipe.transform(4, '.1'),
-        price: this.currencyPipe.transform(12.99),
-        discount: this.percentPipe.transform(0.05, '.2')
-      },
-      {
-        id: 4,
-        description: 'fourth book',
-        amount: this.decimalPipe.transform(1, '.1'),
-        price: this.currencyPipe.transform(19.99),
-        discount: this.percentPipe.transform(0.02, '.2')
-      },
-      {
-        id: 5,
-        description: 'fifth book',
-        amount: this.decimalPipe.transform(8),
-        price: this.currencyPipe.transform(10.25),
-        discount: this.percentPipe.transform(0.2, '.2')
-      }
-    ];
-  }
-
 
 }

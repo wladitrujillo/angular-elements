@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
+
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { merge, tap } from 'rxjs';
-
-
 
 @Component({
   selector: 'app-generic-table',
@@ -12,18 +13,35 @@ import { merge, tap } from 'rxjs';
 export class GenericTableComponent implements OnInit, AfterViewInit {
 
   @Input() isPageable = false;
-
-  @Input() dataSource: any = {};
-  @Input() columnsSchema: { key: string, type: string, label: string }[] = [];
+  @Input() isSortable = false;
+  @Input() isFilterable = false;
+  @Input() columnsSchema: {
+    label: string;
+    key: string;
+    type: string;
+    isSortable?: boolean;
+  }[] = [];
   @Input() paginationSizes: number[] = [5, 10, 15];
   @Input() defaultPageSize = this.paginationSizes[0];
+  @Input() dataSource: any;
+
+  @Output() sort: EventEmitter<Sort> = new EventEmitter();
+  @Output() rowAction: EventEmitter<any> = new EventEmitter<any>();
+
+  @ViewChild(MatPaginator, { static: false }) matPaginator!: MatPaginator;
+  @ViewChild(MatSort, { static: true }) matSort!: MatSort;
+
 
   displayedColumns: string[] = [];
 
-  @ViewChild(MatPaginator, { static: false }) matPaginator?: MatPaginator;
+  constructor() {
+  }
 
-  constructor() { }
+  ngOnInit(): void {
+    this.displayedColumns = this.columnsSchema.map((tableColumn) => tableColumn.key);
+  }
 
+  // we need this, in order to make pagination work with *ngIf
   ngAfterViewInit(): void {
     merge(this.matPaginator?.page)
       .pipe(
@@ -34,12 +52,24 @@ export class GenericTableComponent implements OnInit, AfterViewInit {
   }
 
   loadPage() {
-    this.dataSource.load(
+    this.dataSource.loadData(
       this.matPaginator?.pageIndex,
       this.matPaginator?.pageSize);
   }
 
-  ngOnInit(): void {
-    this.displayedColumns = this.columnsSchema?.map((col) => col.key);
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  sortTable(sortParameters: Sort) {
+    // defining name of data property, to sort by, instead of column name
+    sortParameters.active = this.columnsSchema.find(column => column.label === sortParameters.active)?.key || '';
+    this.sort.emit(sortParameters);
+  }
+
+  emitRowAction(row: any) {
+    this.rowAction.emit(row);
   }
 }
