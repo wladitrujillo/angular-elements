@@ -2,7 +2,6 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { merge, tap } from 'rxjs';
 
 @Component({
@@ -26,7 +25,8 @@ export class GenericTableComponent implements OnInit, AfterViewInit {
   @Input() dataSource: any;
 
   @Output() sort: EventEmitter<Sort> = new EventEmitter();
-  @Output() rowAction: EventEmitter<any> = new EventEmitter<any>();
+  @Output() rowSelection: EventEmitter<any> = new EventEmitter<any>();
+  @Output() rowDeleting: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild(MatPaginator, { static: false }) matPaginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) matSort!: MatSort;
@@ -69,7 +69,11 @@ export class GenericTableComponent implements OnInit, AfterViewInit {
     this.sort.emit(sortParameters);
   }
 
-  emitRowAction(row: any) {
-    this.rowAction.emit(row);
+  emitRowSelection(row: any) {
+    this.rowSelection.emit(row);
+  }
+
+  emitRowDeleting(row:any){
+    this.rowDeleting.emit(row);
   }
 }

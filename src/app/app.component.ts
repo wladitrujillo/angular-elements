@@ -73,9 +73,11 @@ export class AppComponent implements OnInit {
     }
   }
 
-  rowAction(row: Todo) {
-    //this.orders = this.orders.filter(item => item.id !== order.id);
-    console.log("Row action:", row)
+  rowSelection(row: Todo) {
+    console.log("Row selection:", row)
   }
 
+  rowDeleting(row: Todo) {
+    console.log("Row deleting:", row)
+  }
 }
