@@ -5,18 +5,21 @@ import { MaterialModule } from '../material/material.module';
 import { FormsModule } from '@angular/forms';
 import { CustomTableComponent } from './custom-table/custom-table.component';
 import { DataPropertyGetterPipe } from './custom-table/data-property-getter.pipe';
+import { SimpleTableComponent } from './simple-table/simple-table.component';
 
 
 
 @NgModule({
   exports:[
     GenericTableComponent,
-    CustomTableComponent
+    CustomTableComponent,
+    SimpleTableComponent
   ],
   declarations: [
     GenericTableComponent,
     CustomTableComponent,
-    DataPropertyGetterPipe
+    DataPropertyGetterPipe,
+    SimpleTableComponent
   ],
   imports: [
     CommonModule,
